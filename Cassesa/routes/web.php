@@ -129,3 +129,6 @@ Route::get('/', function () {
    Route::resource('proyectos','ProyectosController'); 
                                                   });
 
+  //Abner: retorna en un json los empleados filtrador por el nombre
+   Route::get('empleados/{empleados}', 'EmpleadosController@empleadosFilter');
+

@@ -251,9 +251,34 @@ class EmpleadosController extends Controller{
 
           return view('templates.admin.empleados.index')->with('empleados',$empleados)->with('carbon',$carbon);                         
                                                }
-   
+  
+  // Abner: recibe el input del usuario y retorna los empleados filtrados por ese input de manera asíncrona 
+  public function empleadosFilter($empleado){
 
-                               
+    $carbon=Carbon::now();                
 
+    $empleados=Empleado::search($empleado)->orderBy('id','DESC')->paginate(19);
+    $images=Image::all();                    
+    
+    $empleados->each(function($empleados){
+      $empleados->images;
+    });
+
+    $proyecto=Proyecto::all();
+      $empleados->each(function($empleados){
+      $empleados->proyecto;
+    }); 
+
+    $empleados->each(function($empleados){
+      $empleados->rtn->first();
+    });
+
+    $empleados->each(function($empleados){
+      $empleados->atc_penales->first();
+    });
+
+    return $empleados->toJson();
+  }
+  // /Abner
 
 }

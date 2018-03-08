@@ -46,30 +46,29 @@ Home Empleados
      		<th style="text-align: center;"><font size="4" color="deepskyblue"  >Editar</font></th>
      		<th style="text-align: center;"><font size="4" color="deepskyblue"  >Asignar a proyecto</font></th>
      	</thead>
-        <tbody>
-         
-          @foreach ($empleados as $empleado)
+        <tbody id="table-content">
+ @foreach ($empleados as $empleado)
               
            
 
-        	<tr> 
+            <tr> 
 
 
-        		<td style="text-align: center;"> 
-        			<a href="{{route('empleados.perfil',$empleado->id)}}"  class="image"><img src="/images/perfiles/{{$empleado->images->name}}" 
-     				   				style=" 
-        			                height: 110px;
-    							    width: 110px;
-    							    /* los siguientes valores son independientes del tamaño del círculo */
-    							    background-repeat: no-repeat;
-    							    background-position: 50%;
-    							    border-radius: 50%;
-    							    background-size: 100% auto;" />
-    				</a>
-    			</td>
-        		
-        		  <td style="color: rgb(150, 156, 156  ); text-align: center;"><br><br>{{$empleado->name}}</td>
-        		
+                <td style="text-align: center;"> 
+                    <a href="{{route('empleados.perfil',$empleado->id)}}"  class="image"><img src="/images/perfiles/{{$empleado->images->name}}" 
+                                    style=" 
+                                    height: 110px;
+                                    width: 110px;
+                                    /* los siguientes valores son independientes del tamaño del círculo */
+                                    background-repeat: no-repeat;
+                                    background-position: 50%;
+                                    border-radius: 50%;
+                                    background-size: 100% auto;" />
+                    </a>
+                </td>
+                
+                  <td style="color: rgb(150, 156, 156  ); text-align: center;"><br><br>{{$empleado->name}}</td>
+                
                 <td style="color: rgb(150, 156, 156  ); text-align: center;">            
                    @if($empleado->cargo=="")
                    <br><br>No contratado
@@ -80,7 +79,7 @@ Home Empleados
 
 
 
-        		<td style="color: rgb(150, 156, 156  ); text-align: center;">
+                <td style="color: rgb(150, 156, 156  ); text-align: center;">
                     @if($empleado->proyecto=="")
                         <span  ><br><br>sin asignar</span>
                         @else           
@@ -90,7 +89,7 @@ Home Empleados
               
                 </td>
 
-        		<td style="color: rgb(150, 156, 156  ); text-align: center;">
+                <td style="color: rgb(150, 156, 156  ); text-align: center;">
                             @if($empleado->estado=="")
 
                             <br><br>Aspirante
@@ -102,10 +101,10 @@ Home Empleados
 
                 </td>
 
-        		<td style="color: rgb(150, 156, 156  ); text-align: center;">
+                <td style="color: rgb(150, 156, 156  ); text-align: center;">
                     <a href="{{route('empleados.edit',$empleado->id)}}" class="image"><br><img src="{{asset('images/editar.png')}}" style="height: 70px; width: 70px;" ></a>
                 </td>
-        		
+                
 
 
                 <td style="color: rgb(150, 156, 156  ); text-align: center;">
@@ -122,7 +121,7 @@ Home Empleados
                     @endif
 
                 </td>
-        	
+            
 
 
 
@@ -182,9 +181,53 @@ Home Empleados
         
     
 </script>
- 
 
-
+ <!-- Abner: script encargado de aplicar el filtro -->
+<script type="text/javascript">
+    var server = 'http://localhost:8000';
+    $('#query').keyup(function(){    
+        $.get(server+'/empleados/'+$('#query').val(), function(response){
+            var empleados = JSON.parse(response).data;
+            var rows = "";
+            empleados.forEach(function(empleado){
+                var cargo = empleado.cargo === "" ? 'No encontrado' : empleado.cargo;
+                var proyecto = empleado.proyecto === "" ? 'Sin asignar' : empleado.proyecto.name;
+                var estado = empleado.estado === "" ? 'Aspirante' : empleado.estado;
+                var asignar = empleado.estado === "Activo" ? '<a href="'+server+'/empleados/'+empleado.id+'/asignar" class="image"><br><img src="{{asset('images/asignar.png')}}" style="height: 70px; width: 70px;" ></a>' : '';
+                var newRow =    '<tr>'+
+                                '<td style="text-align: center;"> ' +
+                                '    <a href="'+server+'/empleadosPerfil/'+empleado.id+'" class="image"><img src="/images/perfiles/'+empleado.images.name+'" '+
+                                '    style=" ' +
+                                '    height: 110px;' +
+                                '    width: 110px;' +
+                                '    background-repeat: no-repeat;' +
+                                '    background-position: 50%;' +
+                                '    border-radius: 50%;' +
+                                '    background-size: 100% auto;" />' +
+                                '    </a>' +
+                                '</td>' +
+                                '<td style="color: rgb(150, 156, 156  ); text-align: center;"><br><br>'+empleado.name+'</td>' +
+                                '<td style="color: rgb(150, 156, 156  ); text-align: center;">' +
+                                '    <span ><br><br>'+cargo+'</span>' +
+                                '</td>' +
+                                '<td style="color: rgb(150, 156, 156  ); text-align: center;">' +
+                                '    <span ><br><br>proyecto</span>' +
+                                '</td>' +
+                                '<td style="color: rgb(150, 156, 156  ); text-align: center;">' +
+                                '    <br><br>estado' +
+                                '</td>'+
+                                '<td style="color: rgb(150, 156, 156  ); text-align: center;">' +
+                                '    <a href="'+server+'/admin/empleados/'+empleado.id+'/edit" class="image"><br><img src="{{asset('images/editar.png')}}" style="height: 70px; width: 70px;" ></a>' +
+                                '</td>' +
+                                '<td style="color: rgb(150, 156, 156  ); text-align: center;">'+asignar+'</td>'+
+                                '</tr>'
+                rows = rows + newRow;
+                $('#table-content').html(rows);
+            });
+        });
+    })
+</script>
+<!-- /Abner -->
 
      <script  src="{{asset('plugins/js-especiales/mensajes.js')}}"> </script>
 @endsection
